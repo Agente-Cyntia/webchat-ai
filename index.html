@@ -1,74 +1,173 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Chat IA</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-    }
-    #chat {
-      background: white;
-      width: 100%;
-      max-width: 500px;
-      border-radius: 8px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      height: 80vh;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    #messages {
-      flex: 1;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
-    .msg {
-      margin: 6px 0;
-      padding: 8px;
-      border-radius: 6px;
-      max-width: 80%;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    .user {
-      background: #DCF8C6;
-      align-self: flex-end;
-    }
-    .bot {
-      background: #eee;
-      align-self: flex-start;
-    }
-    form {
-      display: flex;
-      gap: 5px;
-    }
-    input {
-      flex: 1;
-      padding: 8px;
-    }
-    button {
-      padding: 8px 12px;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>CyntIA – Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100dvh;
+}
+
+#chat {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  height: 100dvh;
+  max-height: 100dvh;
+  border-radius: 0;
+  box-shadow: 0 20px 40px rgba(0,0,0,.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  #chat {
+    height: 90vh;
+    border-radius: 16px;
+  }
+}
+
+header {
+  padding: 14px;
+  background: #5a67d8;
+  color: white;
+  text-align: center;
+}
+
+header .title {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+header .subtitle {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+#messages {
+  flex: 1;
+  padding: 14px;
+  overflow-y: auto;
+  background: #f7f7f8;
+  display: flex;
+  flex-direction: column;
+}
+
+.msg {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  animation: fadeIn .2s ease;
+  word-wrap: break-word;
+}
+
+.user {
+  background: #dcf8c6;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.bot {
+  background: #ffffff;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.typing {
+  font-style: italic;
+  opacity: .6;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+form {
+  display: flex;
+  padding: 10px;
+  gap: 8px;
+  border-top: 1px solid #ddd;
+  background: white;
+}
+
+input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+button {
+  border: none;
+  background: #5a67d8;
+  color: white;
+  padding: 0 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #434190;
+}
+
+footer {
+  text-align: center;
+  font-size: 11px;
+  padding: 6px 10px env(safe-area-inset-bottom);
+  background: #f1f1f1;
+  color: #555;
+}
+
+footer a {
+  color: #5a67d8;
+  text-decoration: none;
+  margin: 0 4px;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+</style>
 </head>
+
 <body>
 
 <div id="chat">
+  <header>
+    <div class="title">CyntIA</div>
+    <div class="subtitle">Asistente virtual</div>
+  </header>
+
   <div id="messages"></div>
+
   <form id="form">
-    <input
-      id="input"
-      placeholder="Escribí un mensaje..."
-      autocomplete="off"
-    />
+    <input id="input" placeholder="Escribí un mensaje…" autocomplete="off" />
     <button>Enviar</button>
   </form>
+
+  <footer>
+    Creado por <strong>Lalita635</strong> ·
+    <a href="http://bit.ly/45BE8TF" target="_blank">Web</a> |
+    <a href="http://bit.ly/4fS0yUa" target="_blank">Colaborar</a>
+  </footer>
 </div>
 
 <script>
@@ -81,13 +180,25 @@ const form = document.getElementById("form");
 const input = document.getElementById("input");
 
 function addMessage(text, className) {
-  if (!text) return;
-
   const div = document.createElement("div");
   div.className = `msg ${className}`;
   div.textContent = text;
   messagesDiv.appendChild(div);
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  return div;
+}
+
+function showTyping() {
+  return addMessage("CyntIA está escribiendo…", "bot typing");
+}
+
+async function typeText(element, text) {
+  element.textContent = "";
+  for (let char of text) {
+    element.textContent += char;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    await new Promise(r => setTimeout(r, 20));
+  }
 }
 
 form.addEventListener("submit", async (e) => {
@@ -98,36 +209,27 @@ form.addEventListener("submit", async (e) => {
 
   addMessage(text, "user");
   input.value = "";
-  input.focus();
+
+  const typingEl = showTyping();
 
   try {
     const res = await fetch(webhookUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: text,
-        memory: memory
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text, memory })
     });
 
     const data = await res.json();
+    typingEl.remove();
 
-    // n8n puede devolver array o objeto
-    const payload = Array.isArray(data) ? data[0] : data;
+    memory = data.memory || memory;
 
-    if (!payload || !payload.reply) {
-      addMessage("No se recibió respuesta del agente.", "bot");
-      return;
-    }
+    const botMsg = addMessage("", "bot");
+    await typeText(botMsg, data.reply || "No se recibió respuesta del agente.");
 
-    memory = payload.memory || memory;
-    addMessage(payload.reply, "bot");
-
-  } catch (err) {
-    addMessage("Error al conectar con el agente.", "bot");
-    console.error(err);
+  } catch {
+    typingEl.remove();
+    addMessage("Error al conectar con CyntIA.", "bot");
   }
 });
 </script>
