@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat IA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    #chat {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+    }
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .msg {
+      margin: 6px 0;
+      padding: 8px;
+      border-radius: 6px;
+      max-width: 80%;
+    }
+    .user {
+      background: #DCF8C6;
+      align-self: flex-end;
+    }
+    .bot {
+      background: #eee;
+      align-self: flex-start;
+    }
+    form {
+      display: flex;
+      gap: 5px;
+    }
+    input {
+      flex: 1;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="chat">
+  <div id="messages"></div>
+  <form id="form">
+    <input id="input" placeholder="Escribí un mensaje..." autocomplete="off" />
+    <button>Enviar</button>
+  </form>
+</div>
+
+<script>
+const webhookUrl = "https://n8n-free-fzir.onrender.com/webhook/webchat-ai";
+
+let memory = [];
+
+const messagesDiv = document.getElementById("messages");
+const form = document.getElementById("form");
+const input = document.getElementById("input");
+
+function addMessage(text, className) {
+  const div = document.createElement("div");
+  div.className = `msg ${className}`;
+  div.textContent = text;
+  messagesDiv.appendChild(div);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+  input.value = "";
+
+  const res = await fetch(webhookUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: text,
+      memory: memory
+    })
+  });
+
+  const data = await res.json();
+  memory = data.memory || memory;
+
+  addMessage(data.reply, "bot");
+});
+</script>
+
+</body>
+</html>
