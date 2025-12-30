@@ -88,21 +88,18 @@ form.addEventListener("submit", async (e) => {
   const res = await fetch(webhookUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message: text,
-      memory: memory
-    })
-  });
-
-  const data = await res.json();
-  memory = data.memory || memory;
-
+    body: JSON.stringify({ message: userInput })
+  })
+.then(res => res.json())
+.then(data => {
   addMessage(data.reply, "bot");
+  });
 });
 </script>
 
 </body>
 </html>
+
 
 
 
